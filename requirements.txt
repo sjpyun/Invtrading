@@ -10,6 +10,8 @@ DateTime==5.5
 Deprecated==1.2.18
 Flask==3.1.0
 Flask-Cors==5.0.0
+pymysql  # (If you're using MySQL)
+gunicorn  # Required for deployment
 fonttools==4.56.0
 frozendict==2.4.6
 idna==3.10
