@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+</head>
+<body>
+    <h2>Welcome to Your Trading Dashboard</h2>
+    <p id="user-info">Loading...</p>
+
+<script>
+    // Declare urlParams only once at the top
+    const urlParams = new URLSearchParams(window.location.search);
+    const web_id = urlParams.get("web_id");
+
+    if (!web_id) {
+        alert("Unauthorized access. Redirecting...");
+        window.location.href = "login.html";
+    } else {
+        fetchUserInfo();
+    }
+
+    function fetchUserInfo() {
+        fetch(`https://invtrading.onrender.com/get_user_info?web_id=${web_id}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.user_id) {
+                document.getElementById("user-info").innerText = `Logged in as User ID: ${data.user_id}`;
+            } else {
+                alert("User ID not found. Redirecting...");
+                window.location.href = "login.html";
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching user info:", error); 
+            alert("An error occurred. Redirecting...");
+            window.location.href = "login.html";
+        });
+    }
+</script>
+
+<!-- Current balance and stock position -->
+<h3>Your Cash Balance: $<span id="balance">Loading...</span></h3>
+<h3>Your Total Wealth: $<span id="total-wealth">Loading...</span></h3>
+<h3>Your Current Stock Position: $<span id="holdings">Loading...</span></h3>
+<h3>Your Holdings</h3>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Symbol</th>
+            <th>Quantity</th>
+            <th>Current Price</th>
+            <th>Current Value</th>
+        </tr>
+    </thead>
+    <tbody id="holdings-table">
+        <!-- Holdings data will be inserted here -->
+    </tbody>
+</table>
+
+
+<script>
+function fetchBalanceAndWealth() {
+    fetch(`https://invtrading.onrender.com/get_balance?web_id=${web_id}`)
+    .then(response => response.json())
+    .then(data => {
+        let cashBalance = data.balance;
+        console.log("Cash Balance:", cashBalance);
+        document.getElementById("balance").innerText = cashBalance.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+        // Fetch stock holdings
+        fetch(`https://invtrading.onrender.com/get_holdings?web_id=${web_id}`)
+        .then(response => response.json())
+        .then(holdingsData => {
+            console.log("Holdings Data:", holdingsData);
+            let totalStockValue = holdingsData.total_stock_value || 0;  // Now correctly fetched
+            document.getElementById("holdings").innerText = totalStockValue.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+            let totalWealth = cashBalance + totalStockValue;  // Fix this calculation
+            console.log("Total Wealth:", totalWealth);
+            document.getElementById("total-wealth").innerText = totalWealth.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        })
+        .catch(error => {
+            console.error("Error fetching holdings:", error);
+        });
+    })
+    .catch(error => {
+        console.error("Error fetching balance:", error);
+    });
+}
+
+
+    fetchBalanceAndWealth();
+
+</script>
+
+<script>
+function fetchHoldings() {
+    fetch(`https://invtrading.onrender.com/get_holdings?web_id=${web_id}`)
+    .then(response => response.json())
+    .then(data => {
+        let table = document.getElementById("holdings-table");
+        table.innerHTML = "";  // Clear previous content
+
+        data.holdings.forEach(holding => {
+            let row = `<tr>
+                <td>${holding.symbol}</td>
+                <td>${holding.quantity}</td>
+                <td>$${holding.price.toFixed(2)}</td>
+                <td>$${holding.value.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+            </tr>`;
+            table.innerHTML += row;
+        });
+    })
+    .catch(error => console.error("Error fetching holdings:", error));
+}
+
+// Load holdings on page load
+fetchHoldings();
+
+function fetchTradeHistory() {
+    fetch(`https://invtrading.onrender.com/get_trades?web_id=${web_id}`)
+    .then(response => response.json())
+    .then(data => {
+        let table = document.getElementById("trade-history");
+        table.innerHTML = "";  // Clear previous content
+        data.trades.forEach(trade => {
+            let row = `<tr>
+                <td>${trade.symbol}</td>
+                <td>${trade.type}</td>
+                <td>${trade.quantity}</td>
+                <td>$${trade.price.toFixed(2)}</td>
+                <td>${trade.timestamp}</td>
+            </tr>`;
+            table.innerHTML += row;
+        });
+    })
+    .catch(error => console.error("Error fetching trades:", error));
+}
+
+// Load on page load
+fetchTradeHistory();
+</script>
+
+
+
+
+<h3>Place a Trade</h3>
+<label>Symbol:</label>
+<input type="text" id="trade-symbol">
+<label>Type:</label>
+<select id="trade-type">
+    <option value="buy">Buy</option>
+    <option value="sell">Sell</option>
+</select>
+<label>Quantity:</label>
+<input type="number" id="trade-quantity">
+<button onclick="placeTrade()">Submit Trade</button>
+
+
+
+
+<h3>Stock Prices</h3>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Symbol</th>
+            <th>Price</th>
+            <th>Last Updated</th>
+        </tr>
+    </thead>
+    <tbody id="stock-table">
+        <!-- Stock data will be inserted here -->
+    </tbody>
+</table>
+
+<script>
+    function fetchStockPrices() {
+        fetch("https://invtrading.onrender.com/get_stock_prices")
+        .then(response => response.json())
+        .then(data => {
+            let table = document.getElementById("stock-table");
+            table.innerHTML = "";
+            data.forEach(stock => {
+                let row = `<tr>
+                    <td>${stock.symbol}</td>
+                    <td>${stock.price.toFixed(2)}</td>
+                    <td>${stock.last_updated}</td>
+                </tr>`;
+                table.innerHTML += row;
+            });
+        })
+        .catch(error => console.error("Error fetching stock prices:", error));
+    }
+
+    fetchStockPrices();  // Load stock prices when page loads
+    setInterval(fetchStockPrices, 60000); // Refresh every 60 sec
+</script>
+
+
+<script>
+function fetchBalance() {
+    fetch(`https://invtrading.onrender.com/get_balance?web_id=${web_id}`)
+    .then(response => response.json())
+    .then(data => {
+        // Format the balance with commas (e.g., 100000.00 → 100,000.00)
+        document.getElementById("balance").innerText = data.balance.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    })
+    .catch(error => console.error("Error fetching balance:", error));
+}
+
+function placeTrade() {
+    let symbol = document.getElementById("trade-symbol").value.trim().toUpperCase(); // Trim spaces & uppercase
+    let orderType = document.getElementById("trade-type").value;
+    let quantity = document.getElementById("trade-quantity").value;
+
+    fetch("https://invtrading.onrender.com/trade", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({web_id: web_id, symbol: symbol, order_type: orderType, quantity: quantity})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert("Trade successful! New Balance: $" + data.new_balance.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+            
+            fetchBalanceAndWealth(); // Update balance and wealth
+            fetchHoldings(); // Refresh holdings table
+            fetchTradeHistory(); // Refresh trade history immediately
+        } else {
+            alert("Trade failed: " + data.error);
+        }
+    })
+    .catch(error => console.error("Error placing trade:", error));
+}
+
+
+    fetchBalance();
+</script>
+
+
+<h3>Trade History</h3>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Symbol</th>
+            <th>Type</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Timestamp</th>
+        </tr>
+    </thead>
+    <tbody id="trade-history">
+        <!-- Trades will be inserted here -->
+    </tbody>
+</table>
+
+
+</body>
+</html>
