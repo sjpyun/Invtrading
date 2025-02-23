@@ -8,7 +8,7 @@ app = Flask(__name__)
 CORS(app)  # Allow cross-origin requests
 
 # Ensure PORT is set properly
-port = int(os.environ.get("PORT", 10000))  # Default to 10000 per Render's documentation
+port = int(os.environ.get("PORT", 4000))  # Default to 10000 per Render's documentation
 
 
 
