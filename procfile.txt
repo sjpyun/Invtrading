@@ -1,1 +1,1 @@
-web: /opt/render/project/python/venv/bin/gunicorn server:app --bind 0.0.0.0:$PORT
+web: /opt/render/project/python/venv/bin/gunicorn server:app --bind 0.0.0.0:10000
