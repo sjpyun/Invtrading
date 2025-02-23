@@ -2,11 +2,14 @@ services:
   - type: web
     name: biz3120-trading-sim
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn server:app
+    python_version: 3.11.11  # Using the version Render installed
+    buildCommand: |
+      pip install -r requirements.txt
+    startCommand: |
+      python -m gunicorn server:app --bind 0.0.0.0:$PORT
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.13.1
+      - key: PYTHONPATH
+        value: .
       - key: PORT
         value: 8000
     plan: free
