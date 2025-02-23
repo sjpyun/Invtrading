@@ -3,5 +3,5 @@ services:
     name: biz3120-trading-sim
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn server:app
+    startCommand: uvicorn -b 0.0.0.0:$PORT server:app
     plan: free
