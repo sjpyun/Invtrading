@@ -8,13 +8,14 @@ app = Flask(__name__)
 CORS(app)  # Allow cross-origin requests
 
 # Ensure PORT is set properly
-port = int(os.environ.get("PORT", 4000))  # Default to 10000 per Render's documentation
+port = int(os.environ.get("PORT", 10000))  # If the system does not set 
+# a number, set the port to 10000 per Render's documentation
 
 
 
 @app.route("/")
 def home():
-    return render_template("login_web.html")
+    return "Trading Simulation" #render_template("login_web.html")
 
 
 
