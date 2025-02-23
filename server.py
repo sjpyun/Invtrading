@@ -3,12 +3,11 @@ from flask_cors import CORS
 import sqlite3
 import os
 
-databasefile="trading_sim_data.db"
 app = Flask(__name__)
 CORS(app)  # Allow cross-origin requests
 
-# Ensure PORT is set properly
-port = int(os.environ.get("PORT", 10000))  # If the system does not set 
+
+databasefile="trading_sim_data.db"
 # a number, set the port to 10000 per Render's documentation
 
 
@@ -237,6 +236,8 @@ def get_trades():
 
 
 if __name__ == "__main__": 
+    # Ensure PORT is set properly
+    port = int(os.environ.get("PORT", 10000))  # If the system does not set 
     app.run(host="0.0.0.0", port=port)
  
 
