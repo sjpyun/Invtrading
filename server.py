@@ -1,6 +1,12 @@
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import sqlite3
+import os
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))  # Default to 5000 if PORT is not set
+    app.run(host="0.0.0.0", port=port)
+
 databasefile="trading_sim_data.db"
 app = Flask(__name__)
 CORS(app)  # Allow cross-origin requests
