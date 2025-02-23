@@ -3,7 +3,6 @@ from flask_cors import CORS
 import sqlite3
 import os
 
-
 databasefile="trading_sim_data.db"
 app = Flask(__name__)
 CORS(app)  # Allow cross-origin requests
@@ -15,15 +14,9 @@ port = int(os.environ.get("PORT", 10000))  # Default to 10000 per Render's docum
 
 @app.route("/")
 def home():
-    return "Trading Simulation API is running"
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=port)
+    return render_template("login_web.html")
 
 
-@app.route("/")
-def home():
-    return render_template("login.html")
 
 # Function to get web_id based on user_id and password
 def get_web_id(user_id, password):
@@ -242,6 +235,7 @@ def get_trades():
     return jsonify({"trades": trades})
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
+if __name__ == "__main__": 
+    app.run(host="0.0.0.0", port=port)
+ 
 
