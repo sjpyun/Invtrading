@@ -3,13 +3,23 @@ from flask_cors import CORS
 import sqlite3
 import os
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))  # Default to 5000 if PORT is not set
-    app.run(host="0.0.0.0", port=port)
 
 databasefile="trading_sim_data.db"
 app = Flask(__name__)
 CORS(app)  # Allow cross-origin requests
+
+# Ensure PORT is set properly
+port = int(os.environ.get("PORT", 10000))  # Default to 10000 per Render's documentation
+
+
+
+@app.route("/")
+def home():
+    return "Trading Simulation API is running"
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=port)
+
 
 @app.route("/")
 def home():
