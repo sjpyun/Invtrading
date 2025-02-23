@@ -3,5 +3,5 @@ services:
     name: BIZ3120_2501
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn -b 0.0.0.0:10000 server:app
+    startCommand: gunicorn -b 0.0.0.0:$port server:app
     plan: free
